@@ -10,11 +10,16 @@ down:
 ksqldb-cli:
 	$(docker_compose_bin) exec ksqldb-cli ksql http://ksqldb-server:8088
 
-create-connectors:
-	curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d @postgres-connector.json
+init: create-topics create-connectors ksqldb-migrations
 
 create-topics:
-	$(docker_compose_bin) exec -it kafka1 ../../usr/bin/kafka-topics --create --topic user-likes-stream --bootstrap-server localhost:9092 --partitions 3 --replication-factor 2
-	$(docker_compose_bin) exec -it kafka1 ../../usr/bin/kafka-topics  --describe --topic user-likes-stream  --bootstrap-server localhost:9092
-	$(docker_compose_bin) exec -it kafka1 ../../usr/bin/kafka-topics --create --topic user-like-group-table --bootstrap-server localhost:9092 --partitions 3 --replication-factor 2 --config cleanup.policy=compact
-	$(docker_compose_bin) exec -it kafka1 ../../usr/bin/kafka-topics  --describe --topic user-like-group-table  --bootstrap-server localhost:9092
+	$(docker_compose_bin) exec -it kafka1 ../../usr/bin/kafka-topics --create --topic postgres.public.blocked_users --bootstrap-server localhost:9092 --partitions 3 --replication-factor 2 --config "cleanup.policy=compact"
+	$(docker_compose_bin) exec -it kafka1 ../../usr/bin/kafka-topics --create --topic postgres.public.ban_words --bootstrap-server localhost:9092 --partitions 3 --replication-factor 2 --config "cleanup.policy=compact"
+	$(docker_compose_bin) exec -it kafka1 ../../usr/bin/kafka-topics --create --topic messages --bootstrap-server localhost:9092 --partitions 3 --replication-factor 2
+	$(docker_compose_bin) exec -it kafka1 ../../usr/bin/kafka-topics --create --topic filtered_messages --bootstrap-server localhost:9092 --partitions 3 --replication-factor 2
+
+create-connectors:
+	curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d @docker/postgres-connector.json
+
+ksqldb-migrations:
+	$(docker_compose_bin) exec ksqldb-cli ksql http://ksqldb-server:8088 -f '/docker/ksql-queries.sql'
