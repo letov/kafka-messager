@@ -59,7 +59,7 @@ func (db *DB) makeMigrations() {
 	}
 }
 
-func NewDB(lc fx.Lifecycle, log *zap.SugaredLogger, c *config.Config) *DB {
+func NewDB(lc fx.Lifecycle, log *zap.SugaredLogger, c config.Config) *DB {
 	db := &DB{
 		log: log,
 	}

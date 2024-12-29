@@ -3,15 +3,18 @@ package config
 import (
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
 
 type Config struct {
 	DatabaseDns string
+	Brokers     []string
+	MsgTopic    string
 }
 
-func NewConfig() *Config {
+func NewConfig() Config {
 	var err error
 	if os.Getenv("IS_TEST_ENV") == "true" {
 		err = godotenv.Load("../../.env.test")
@@ -23,8 +26,10 @@ func NewConfig() *Config {
 		panic(err)
 	}
 
-	return &Config{
+	return Config{
 		DatabaseDns: getEnvStr("DATABASE_DSN", ""),
+		Brokers:     strings.Split(getEnvStr("BROKERS", ""), ","),
+		MsgTopic:    getEnvStr("MSG_TOPIC", ""),
 	}
 }
 
