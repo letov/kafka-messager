@@ -1,7 +1,7 @@
 package main
 
 import (
-	"kafka-messager/internal/app/app"
+	"kafka-messager/internal/application/app"
 	"kafka-messager/internal/infra/di"
 
 	"go.uber.org/fx"
