@@ -9,9 +9,10 @@ import (
 )
 
 type Config struct {
-	DatabaseDns string
-	Brokers     []string
-	MsgTopic    string
+	DatabaseDns       string
+	Brokers           []string
+	MsgTopic          string
+	SchemaregistryUrl string
 }
 
 func NewConfig() Config {
@@ -27,9 +28,10 @@ func NewConfig() Config {
 	}
 
 	return Config{
-		DatabaseDns: getEnvStr("DATABASE_DSN", ""),
-		Brokers:     strings.Split(getEnvStr("BROKERS", ""), ","),
-		MsgTopic:    getEnvStr("MSG_TOPIC", ""),
+		DatabaseDns:       getEnvStr("DATABASE_DSN", ""),
+		Brokers:           strings.Split(getEnvStr("BROKERS", ""), ","),
+		MsgTopic:          getEnvStr("MSG_TOPIC", ""),
+		SchemaregistryUrl: getEnvStr("SCHEMA_REGISTRY_URL", ""),
 	}
 }
 
