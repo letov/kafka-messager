@@ -1,44 +1,70 @@
 package test
 
 import (
+	"context"
 	"kafka-messager/internal/domain"
-	"kafka-messager/internal/infra/emitter"
-	"math/rand"
+	"kafka-messager/internal/infra/db"
+	"kafka-messager/internal/infra/kafka"
+	"kafka-messager/internal/infra/repo"
 	"testing"
 	"time"
 
 	"go.uber.org/zap"
 )
 
-func Test_Messaging(t *testing.T) {
-	t.Run("test messaging", func(t *testing.T) {
+func Test_BlockUser(t *testing.T) {
+	t.Run("block user test", func(t *testing.T) {
 		initTest(t, func(
-			e *emitter.MsgEmitter,
+			db *db.DB,
+			e *kafka.MsgEmitter,
 			l *zap.SugaredLogger,
+			bu repo.BlockedUser,
 		) {
-			msgCnt := 500
+			//_ = flushKafka(l)
+			ctx := context.Background()
+			_ = flushDB(ctx, db)
 
-			msgOutCh := make(chan *domain.Msg, 50)
+			// 2->1 & 3->1 blocked
+			_ = bu.Save(ctx, 1, 2)
+			_ = bu.Save(ctx, 1, 3)
+
+			msgOutCh := make(chan *domain.Msg)
 			defer close(msgOutCh)
 
 			doneCh := make(chan struct{})
 			defer close(doneCh)
 
-			for i := 0; i < 5; i++ {
-				go e.Emit(doneCh, msgOutCh)
-			}
+			go e.Emit(doneCh, msgOutCh)
 
-			for i := 1; i <= msgCnt; i++ {
-				msg := domain.Msg{
-					Id:          int64(i),
-					UserId:      int64(rand.Uint32()),
-					RecipientId: int64(rand.Uint32()),
-					Message:     RandString(50),
-					Timestamp:   int64(rand.Uint64()),
-				}
-				msgOutCh <- &msg
-				time.Sleep(time.Millisecond * 1)
+			// 2->1 blocked
+			msg := domain.Msg{
+				Id:          1,
+				UserId:      2,
+				RecipientId: 1,
+				Message:     "msg",
+				CreatedAt:   time.Now().Unix(),
 			}
+			msgOutCh <- &msg
+
+			// 3->1 blocked
+			msg = domain.Msg{
+				Id:          2,
+				UserId:      3,
+				RecipientId: 1,
+				Message:     "msg",
+				CreatedAt:   time.Now().Unix(),
+			}
+			msgOutCh <- &msg
+
+			// 4->1 success
+			msg = domain.Msg{
+				Id:          3,
+				UserId:      4,
+				RecipientId: 1,
+				Message:     "msg",
+				CreatedAt:   time.Now().Unix(),
+			}
+			msgOutCh <- &msg
 		})
 	})
 }

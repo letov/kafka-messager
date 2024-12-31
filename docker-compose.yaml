@@ -4,12 +4,19 @@ services:
     container_name: zookeeper
     hostname: zookeeper
     networks:
-      - kafka-network
+      - kafka-nt
+    ports:
+      - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_SERVERS: "zookeeper:22888:23888"
+    healthcheck:
+      test: nc -z localhost 2181 || exit -1
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
 
   kafka1:
@@ -20,7 +27,7 @@ services:
     depends_on:
       - zookeeper
     networks:
-      - kafka-network
+      - kafka-nt
     ports:
       - "9093:9093"
     environment:
@@ -33,6 +40,12 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 2
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
+    healthcheck:
+      test: kafka-topics --bootstrap-server kafka1:9092 --list
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 
   kafka2:
@@ -43,7 +56,7 @@ services:
     depends_on:
       - zookeeper
     networks:
-      - kafka-network
+      - kafka-nt
     ports:
       - "9094:9094"
     environment:
@@ -56,6 +69,12 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 2
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
+    healthcheck:
+      test: kafka-topics --bootstrap-server kafka2:9092 --list
+      interval: 30s
+      timeout: 10s
+      retries: 3
       
   
   kafka3:
@@ -66,7 +85,7 @@ services:
     depends_on:
       - zookeeper
     networks:
-      - kafka-network
+      - kafka-nt
     ports:
       - "9095:9095"
     environment:
@@ -79,6 +98,12 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 2
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
+    healthcheck:
+      test: kafka-topics --bootstrap-server kafka3:9092 --list
+      interval: 30s
+      timeout: 10s
+      retries: 3
       
       
   schema-registry:
@@ -97,7 +122,7 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka1:9092,PLAINTEXT://kafka2:9092,PLAINTEXT://kafka3:9092
     networks:
-      - kafka-network
+      - kafka-nt
     restart: unless-stopped
     healthcheck:
       start_period: 10s
@@ -116,7 +141,7 @@ services:
       - kafka2
       - kafka3
     networks:
-      - kafka-network
+      - kafka-nt
     ports:
       - "8083:8083"
     environment:
@@ -161,7 +186,7 @@ services:
       - kafka3
       - connect
     networks:
-      - kafka-network
+      - kafka-nt
     ports:
       - "8088:8088"
     environment:
@@ -181,7 +206,7 @@ services:
       - connect
       - ksqldb-server
     networks:
-      - kafka-network
+      - kafka-nt
     volumes:
       - ./docker:/docker
     entrypoint: /bin/sh
@@ -199,7 +224,7 @@ services:
       - zookeeper
       - schema-registry
     networks:
-      - kafka-network
+      - kafka-nt
     ports:
       - "8080:8080"
     environment:
@@ -236,11 +261,11 @@ services:
     volumes:
       - postgres_vol:/tmp/postgresql/data
     networks:
-      - kafka-network
+      - kafka-nt
 
 
 networks:
-  kafka-network:
+  kafka-nt:
     driver: bridge
 
 

@@ -1,4 +1,4 @@
-package emitter
+package kafka
 
 import (
 	"fmt"
@@ -28,8 +28,9 @@ func (me MsgEmitter) Emit(doneCh chan struct{}, msgCh chan *domain.Msg) {
 	}
 }
 
-func NewEmitter(log *zap.SugaredLogger, config config.Config) *MsgEmitter {
-	ge, err := goka.NewEmitter(config.Brokers, goka.Stream(config.MsgTopic), new(MsgCodec))
+func NewEmitter(log *zap.SugaredLogger, config config.Config, sch *Schema) *MsgEmitter {
+	codec := NewMsgCodec(config.MsgTopic, sch)
+	ge, err := goka.NewEmitter(config.Brokers, goka.Stream(config.MsgTopic), codec)
 	if err != nil {
 		log.Fatal(err)
 	}
