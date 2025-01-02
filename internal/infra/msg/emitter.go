@@ -1,11 +1,13 @@
-package kafka
+package msg
 
 import (
+	"context"
 	"fmt"
 	"kafka-messager/internal/domain"
 	"kafka-messager/internal/infra/config"
 
 	"github.com/lovoo/goka"
+	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
 
@@ -28,12 +30,19 @@ func (me MsgEmitter) Emit(doneCh chan struct{}, msgCh chan *domain.Msg) {
 	}
 }
 
-func NewEmitter(log *zap.SugaredLogger, config config.Config, sch *Schema) *MsgEmitter {
+func NewEmitter(lc fx.Lifecycle, log *zap.SugaredLogger, config config.Config, sch *Schema) *MsgEmitter {
 	codec := NewMsgCodec(config.MsgTopic, sch)
 	ge, err := goka.NewEmitter(config.Brokers, goka.Stream(config.MsgTopic), codec)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	lc.Append(fx.Hook{
+		OnStop: func(ctx context.Context) error {
+			return ge.Finish()
+		},
+	})
+
 	return &MsgEmitter{
 		ge,
 		log,

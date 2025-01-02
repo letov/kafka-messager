@@ -9,10 +9,16 @@ import (
 )
 
 type Config struct {
-	DatabaseDns       string
-	Brokers           []string
-	MsgTopic          string
-	SchemaregistryUrl string
+	DatabaseDns                string
+	MsgTopic                   string
+	MsgFilteredBlockUsersTopic string
+	SchemaRegistryUrl          string
+	Brokers                    []string
+	KafkaMsgGroup              string
+	KafkaSessionTimeoutMs      int
+	KafkaAutoOffsetReset       string
+	KafkaConsumerPullTimeoutMs int
+	KafkaAcks                  string
 }
 
 func NewConfig() Config {
@@ -28,10 +34,16 @@ func NewConfig() Config {
 	}
 
 	return Config{
-		DatabaseDns:       getEnvStr("DATABASE_DSN", ""),
-		Brokers:           strings.Split(getEnvStr("BROKERS", ""), ","),
-		MsgTopic:          getEnvStr("MSG_TOPIC", ""),
-		SchemaregistryUrl: getEnvStr("SCHEMA_REGISTRY_URL", ""),
+		DatabaseDns:                getEnvStr("DATABASE_DSN", ""),
+		MsgTopic:                   getEnvStr("MSG_TOPIC", ""),
+		MsgFilteredBlockUsersTopic: getEnvStr("MSG_FILTERED_BLOCK_USERS_TOPIC", ""),
+		SchemaRegistryUrl:          getEnvStr("SCHEMA_REGISTRY_URL", ""),
+		Brokers:                    strings.Split(getEnvStr("KAFKA_BROKERS", ""), ","),
+		KafkaMsgGroup:              getEnvStr("KAFKA_MSG_GROUP", ""),
+		KafkaSessionTimeoutMs:      getEnvInt("KAFKA_SESSION_TIMEOUT_MS", 0),
+		KafkaAutoOffsetReset:       getEnvStr("KAFKA_AUTO_OFFSET_RESET", ""),
+		KafkaConsumerPullTimeoutMs: getEnvInt("KAFKA_CONSUMER_PULL_TIMEOUT_MS", 0),
+		KafkaAcks:                  getEnvStr("KAFKA_ACKS", ""),
 	}
 }
 

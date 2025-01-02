@@ -100,8 +100,6 @@ func NewDB(lc fx.Lifecycle, log *zap.SugaredLogger, c config.Config) *DB {
 			if db.pool == nil {
 				return nil
 			}
-
-			log.Info("Close DB pool")
 			db.pool.Close()
 			return nil
 		},
