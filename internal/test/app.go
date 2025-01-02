@@ -6,12 +6,10 @@ import (
 	"kafka-messager/internal/infra/db"
 	"kafka-messager/internal/infra/di"
 	"math/rand"
-	"os/exec"
 	"testing"
 
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxtest"
-	"go.uber.org/zap"
 )
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -22,13 +20,6 @@ func RandString(n int) string {
 		b[i] = letterBytes[rand.Intn(len(letterBytes))]
 	}
 	return string(b)
-}
-
-func flushKafka(l *zap.SugaredLogger) error {
-	cmd := exec.Command("make", "--file=../../Makefile", "init")
-	out, err := cmd.Output()
-	l.Info(string(out))
-	return err
 }
 
 func flushDB(ctx context.Context, db *db.DB) error {

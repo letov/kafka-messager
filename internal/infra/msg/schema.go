@@ -1,4 +1,4 @@
-package kafka
+package msg
 
 import (
 	"kafka-messager/internal/infra/config"
@@ -27,7 +27,7 @@ func NewSchema(
 	conf config.Config,
 	l *zap.SugaredLogger,
 ) *Schema {
-	c, err := schemaregistry.NewClient(schemaregistry.NewConfig(conf.SchemaregistryUrl))
+	c, err := schemaregistry.NewClient(schemaregistry.NewConfig(conf.SchemaRegistryUrl))
 	if err != nil {
 		l.Fatal("Failed to create schema registry ", zap.Error(err))
 	}

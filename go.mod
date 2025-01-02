@@ -7,6 +7,7 @@ require (
 	github.com/jackc/pgx/v5 v5.7.2
 	github.com/joho/godotenv v1.5.1
 	github.com/lovoo/goka v1.1.12
+	github.com/magiconair/properties v1.8.7
 	github.com/pressly/goose/v3 v3.24.0
 	go.uber.org/fx v1.23.0
 	go.uber.org/zap v1.27.0

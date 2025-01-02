@@ -1,4 +1,4 @@
-package kafka
+package msg
 
 import (
 	"encoding/json"
@@ -6,19 +6,19 @@ import (
 	"kafka-messager/internal/domain"
 )
 
-type MsgCodec struct {
+type Codec struct {
 	topic string
 	sch   *Schema
 }
 
-func (mc MsgCodec) Encode(value any) ([]byte, error) {
+func (mc Codec) Encode(value any) ([]byte, error) {
 	if _, isMsg := value.(*domain.Msg); !isMsg {
 		return nil, errors.New("value is not Msg")
 	}
 	return json.Marshal(value)
 }
 
-func (mc MsgCodec) Decode(data []byte) (any, error) {
+func (mc Codec) Decode(data []byte) (any, error) {
 	var (
 		m   domain.Msg
 		err error
@@ -30,11 +30,11 @@ func (mc MsgCodec) Decode(data []byte) (any, error) {
 	return &m, nil
 }
 
-//func (mc MsgCodec) Encode(value any) ([]byte, error) {
+//func (mc Codec) Encode(value any) ([]byte, error) {
 //	return mc.sch.Serialize(mc.topic, value)
 //}
 //
-//func (mc MsgCodec) Decode(data []byte) (any, error) {
+//func (mc Codec) Decode(data []byte) (any, error) {
 //	var (
 //		m   domain.Msg
 //		err error
@@ -43,6 +43,6 @@ func (mc MsgCodec) Decode(data []byte) (any, error) {
 //	return &m, err
 //}
 
-func NewMsgCodec(topic string, sch *Schema) MsgCodec {
-	return MsgCodec{topic, sch}
+func NewMsgCodec(topic string, sch *Schema) Codec {
+	return Codec{topic, sch}
 }
