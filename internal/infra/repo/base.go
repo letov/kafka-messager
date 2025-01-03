@@ -2,9 +2,11 @@ package repo
 
 import (
 	"context"
+	"kafka-messager/internal/domain"
 )
 
 type BanWord interface {
+	GetList(ctx context.Context) ([]domain.BanWord, error)
 	Save(ctx context.Context, word string) error
 }
 
