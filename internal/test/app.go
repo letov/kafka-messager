@@ -22,7 +22,7 @@ func RandString(n int) string {
 	return string(b)
 }
 
-func flushDB(ctx context.Context, db *db.DB) error {
+func FlushDB(ctx context.Context, db *db.DB) error {
 	pool := db.GetPool()
 	query := `SELECT table_name "table" FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE' AND table_name != 'goose_db_version';`
 	rows, err := pool.Query(ctx, query)
