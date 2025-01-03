@@ -22,6 +22,7 @@ func GetAppConstructors() []interface{} {
 		msg.NewSchema,
 		msg.NewEmitter,
 		msg.NewReceiver,
+		msg.NewProcessor,
 	}
 }
 

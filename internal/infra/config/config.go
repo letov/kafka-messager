@@ -14,7 +14,7 @@ type Config struct {
 	MsgFilteredBlockUsersTopic string
 	SchemaRegistryUrl          string
 	Brokers                    []string
-	KafkaMsgGroup              string
+	MsgFiltered                string
 	KafkaSessionTimeoutMs      int
 	KafkaAutoOffsetReset       string
 	KafkaConsumerPullTimeoutMs int
@@ -39,7 +39,7 @@ func NewConfig() Config {
 		MsgFilteredBlockUsersTopic: getEnvStr("MSG_FILTERED_BLOCK_USERS_TOPIC", ""),
 		SchemaRegistryUrl:          getEnvStr("SCHEMA_REGISTRY_URL", ""),
 		Brokers:                    strings.Split(getEnvStr("KAFKA_BROKERS", ""), ","),
-		KafkaMsgGroup:              getEnvStr("KAFKA_MSG_GROUP", ""),
+		MsgFiltered:                getEnvStr("MSG_FILTERED_TOPIC", ""),
 		KafkaSessionTimeoutMs:      getEnvInt("KAFKA_SESSION_TIMEOUT_MS", 0),
 		KafkaAutoOffsetReset:       getEnvStr("KAFKA_AUTO_OFFSET_RESET", ""),
 		KafkaConsumerPullTimeoutMs: getEnvInt("KAFKA_CONSUMER_PULL_TIMEOUT_MS", 0),

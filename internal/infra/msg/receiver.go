@@ -70,7 +70,7 @@ func NewReceiver(
 ) *Receiver {
 	cons, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers":  strings.Join(conf.Brokers, ","),
-		"group.id":           conf.KafkaMsgGroup,
+		"group.id":           conf.MsgFiltered + "-for-test",
 		"session.timeout.ms": conf.KafkaSessionTimeoutMs,
 		"auto.offset.reset":  conf.KafkaAutoOffsetReset,
 		"acks":               conf.KafkaAcks,
@@ -81,8 +81,7 @@ func NewReceiver(
 
 	l.Info("Consumer created")
 
-	err = cons.SubscribeTopics([]string{conf.MsgFilteredBlockUsersTopic}, nil)
-	if err != nil {
+	if cons.SubscribeTopics([]string{conf.MsgFiltered + "-table"}, nil) != nil {
 		l.Fatal("Subscribe error:", err)
 	}
 
