@@ -26,7 +26,7 @@ func Test_BlockUser(t *testing.T) {
 			proc *msg.Processor,
 		) {
 			ctx := context.Background()
-			_ = flushDB(ctx, db)
+			_ = FlushDB(ctx, db)
 
 			// 2->1 & 3->1 blocked
 			_ = bu.Save(ctx, 1, 2)
