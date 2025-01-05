@@ -48,34 +48,28 @@ func Start(
 	go r.Receive(doneCh, msgInCh)
 
 	// 2->1 blocked
-	msg1 := domain.Msg{
-		Id:          1,
-		UserId:      2,
-		RecipientId: 1,
-		Message:     "bad_word1 bad_word2 MESSAGE",
-		CreatedAt:   time.Now().Unix(),
-	}
-	msgOutCh <- &msg1
+	msgOutCh <- domain.NewMsg(
+		domain.WithId(1),
+		domain.WithUserId(2),
+		domain.WithRecipientId(1),
+		domain.WithMessage("bad_word1 bad_word2 MESSAGE"),
+	)
 
 	// 3->1 blocked
-	msg2 := domain.Msg{
-		Id:          2,
-		UserId:      3,
-		RecipientId: 1,
-		Message:     "bad_word1 bad_word2 MESSAGE",
-		CreatedAt:   time.Now().Unix(),
-	}
-	msgOutCh <- &msg2
+	msgOutCh <- domain.NewMsg(
+		domain.WithId(2),
+		domain.WithUserId(3),
+		domain.WithRecipientId(1),
+		domain.WithMessage("bad_word1 bad_word2 MESSAGE"),
+	)
 
 	// 4->1 success
-	msg3 := domain.Msg{
-		Id:          3,
-		UserId:      4,
-		RecipientId: 1,
-		Message:     "bad_word1 bad_word2 MESSAGE",
-		CreatedAt:   time.Now().Unix(),
-	}
-	msgOutCh <- &msg3
+	msgOutCh <- domain.NewMsg(
+		domain.WithId(3),
+		domain.WithUserId(4),
+		domain.WithRecipientId(1),
+		domain.WithMessage("bad_word1 bad_word2 MESSAGE"),
+	)
 
 	raw := <-msgInCh
 	m := raw.(*domain.Msg)

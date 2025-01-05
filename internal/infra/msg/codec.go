@@ -30,19 +30,6 @@ func (mc Codec) Decode(data []byte) (any, error) {
 	return &m, nil
 }
 
-//func (mc Codec) Encode(value any) ([]byte, error) {
-//	return mc.sch.Serialize(mc.topic, value)
-//}
-//
-//func (mc Codec) Decode(data []byte) (any, error) {
-//	var (
-//		m   domain.Msg
-//		err error
-//	)
-//	err = mc.sch.DeserializeInto(mc.topic, data, m)
-//	return &m, err
-//}
-
 func NewMsgCodec(topic string, sch *Schema) Codec {
 	return Codec{topic, sch}
 }
